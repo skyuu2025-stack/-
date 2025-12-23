@@ -23,6 +23,7 @@ export const TRANSLATIONS: Record<Language, Translation & {
     tagline: "Unveil the mysteries of your destiny with ancient wisdom.",
     baziTitle: "Bazi Reading",
     ichingTitle: "I Ching Divination",
+    ichingChanges: "Significance of the Changes",
     faceTitle: "Face Reading",
     dailyTitle: "Daily Horoscope",
     getStarted: "Begin Journey",
@@ -56,6 +57,7 @@ export const TRANSLATIONS: Record<Language, Translation & {
     tagline: "汲取古老东方智慧，洞悉命运玄机。",
     baziTitle: "八字排盘",
     ichingTitle: "周易卜卦",
+    ichingChanges: "变爻解析与化象",
     faceTitle: "AI面相",
     dailyTitle: "每日运势",
     getStarted: "开始探索",
@@ -64,6 +66,7 @@ export const TRANSLATIONS: Record<Language, Translation & {
     unlockPremium: "升级尊享版",
     loading: "正在窥探天机...",
     inputName: "姓名",
+    // Fix duplicate property name for inputBirthDate
     inputBirthDate: "出生日期",
     inputBirthTime: "出生时辰",
     inputGender: "性别",

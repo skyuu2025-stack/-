@@ -19,6 +19,21 @@ export interface ReadingResult {
     content: string;
   }[];
   score: number;
+  // Specialized Bazi fields
+  baziChart?: {
+    pillars: {
+      label: string;
+      stem: string;
+      branch: string;
+      element: string;
+      interpretation: string;
+    }[];
+    dayMaster: string;
+    fiveElements: {
+      element: string;
+      strength: number; // 1-100
+    }[];
+  };
   // Specialized I Ching fields
   hexagram?: {
     lines: (0 | 1)[]; // 0 for Yin (broken), 1 for Yang (solid)
@@ -33,6 +48,7 @@ export interface Translation {
   tagline: string;
   baziTitle: string;
   ichingTitle: string;
+  ichingChanges: string;
   faceTitle: string;
   dailyTitle: string;
   getStarted: string;
