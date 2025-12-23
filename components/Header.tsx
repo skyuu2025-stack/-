@@ -13,7 +13,7 @@ interface HeaderProps {
   onGoHome: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ lang, t, setLang, isPremium, onShowProfile, onGoHome }) => {
+export const Header: React.FC<HeaderProps> = ({ lang, t, setLang, isPremium, onShowPremium, onShowProfile, onGoHome }) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-slate-950/20 backdrop-blur-xl border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
@@ -37,6 +37,15 @@ export const Header: React.FC<HeaderProps> = ({ lang, t, setLang, isPremium, onS
           >
             {t.switchLang}
           </button>
+
+          {!isPremium && (
+            <button 
+              onClick={onShowPremium}
+              className="px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 text-[10px] font-bold tracking-widest uppercase hover:bg-yellow-500/20 transition-all hidden sm:block"
+            >
+              {t.upgradeText.split(' ')[0]}
+            </button>
+          )}
 
           <button 
             onClick={onShowProfile}

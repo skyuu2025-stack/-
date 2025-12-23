@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality, Type, FunctionDeclaration } from '@google/genai';
-import { Language, UserProfile, ReadingType, ReadingResult } from './types';
-import { TRANSLATIONS, Icons } from './constants';
-import { Header } from './components/Header';
-import { FortuneCard } from './components/FortuneCard';
-import { PremiumModal } from './components/PremiumModal';
-import { generateFortune } from './services/geminiService';
+import { Language, UserProfile, ReadingType, ReadingResult } from './types.ts';
+import { TRANSLATIONS, Icons } from './constants.tsx';
+import { Header } from './components/Header.tsx';
+import { FortuneCard } from './components/FortuneCard.tsx';
+import { PremiumModal } from './components/PremiumModal.tsx';
+import { generateFortune } from './services/geminiService.ts';
 
 // --- Utils ---
 function encode(bytes: Uint8Array) {
@@ -405,7 +405,21 @@ const App: React.FC = () => {
   // --- Main Render Flow ---
   return (
     <div className="min-h-screen pb-20 overflow-x-hidden">
-      <Header lang={lang} t={t} setLang={setLang} isPremium={isPremium} onShowPremium={() => setShowPremiumModal(true)} onShowProfile={() => setIsEditingProfile(true)} onGoHome={() => { setCurrentReading(null); setReadingResult(null); setIsEditingProfile(false); stopListening(); if (videoRef.current) (videoRef.current.srcObject as MediaStream)?.getTracks().forEach(t => t.stop()); }} />
+      <Header 
+        lang={lang} 
+        t={t} 
+        setLang={setLang} 
+        isPremium={isPremium} 
+        onShowPremium={() => setShowPremiumModal(true)} 
+        onShowProfile={() => setIsEditingProfile(true)} 
+        onGoHome={() => { 
+          setCurrentReading(null); 
+          setReadingResult(null); 
+          setIsEditingProfile(false); 
+          stopListening(); 
+          if (videoRef.current) (videoRef.current.srcObject as MediaStream)?.getTracks().forEach(track => track.stop()); 
+        }} 
+      />
       <main className="pt-32 px-6 max-w-7xl mx-auto">
         {isEditingProfile ? (
           <div className="min-h-[60vh] flex items-center justify-center">

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import App from './App.tsx';
 
 // Define process shim for browser environment to prevent ReferenceErrors
 (window as any).process = (window as any).process || { env: {} };
