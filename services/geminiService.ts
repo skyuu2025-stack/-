@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Language, ReadingType, ReadingResult } from "../types.ts";
+import { Language, ReadingType, ReadingResult } from "../types";
 
 export const generateFortune = async (
   type: ReadingType,
@@ -8,7 +8,8 @@ export const generateFortune = async (
   lang: Language,
   imageData?: string // base64 string
 ): Promise<ReadingResult> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = (window as any).process?.env?.API_KEY;
+  const ai = new GoogleGenAI({ apiKey });
   
   const isIChing = type === 'iching';
   const isFace = type === 'face';
@@ -86,7 +87,7 @@ export const generateFortune = async (
   });
 
   try {
-    return JSON.parse(response.text);
+    return JSON.parse(response.text || '{}');
   } catch (e) {
     throw new Error("Failed to parse AI response");
   }

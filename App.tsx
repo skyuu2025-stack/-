@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality, Type, FunctionDeclaration } from '@google/genai';
-import { Language, UserProfile, ReadingType, ReadingResult } from './types.ts';
-import { TRANSLATIONS, Icons } from './constants.tsx';
-import { Header } from './components/Header.tsx';
-import { FortuneCard } from './components/FortuneCard.tsx';
-import { PremiumModal } from './components/PremiumModal.tsx';
-import { generateFortune } from './services/geminiService.ts';
+import { Language, UserProfile, ReadingType, ReadingResult } from './types';
+import { TRANSLATIONS, Icons } from './constants';
+import { Header } from './components/Header';
+import { FortuneCard } from './components/FortuneCard';
+import { PremiumModal } from './components/PremiumModal';
+import { generateFortune } from './services/geminiService';
 
 // Audio Utils
 function encode(bytes: Uint8Array) {
@@ -66,11 +66,10 @@ const VoiceWaveform: React.FC = () => {
       {[...Array(20)].map((_, i) => (
         <div
           key={i}
-          className="w-[3px] bg-yellow-500 rounded-full animate-voice-bar"
+          className="w-[3px] bg-yellow-500 rounded-full"
           style={{
             height: `${20 + Math.random() * 80}%`,
-            animationDelay: `${i * 0.05}s`,
-            animationDuration: `${0.4 + Math.random() * 0.4}s`
+            transition: 'height 0.1s ease-in-out'
           }}
         />
       ))}
@@ -138,7 +137,8 @@ const App: React.FC = () => {
     if (isListening) return;
     setIsListening(true);
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = (window as any).process?.env?.API_KEY;
+    const ai = new GoogleGenAI({ apiKey });
     audioContextInRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
     audioContextOutRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
 
@@ -171,19 +171,23 @@ const App: React.FC = () => {
       },
       callbacks: {
         onopen: async () => {
-          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-          const source = audioContextInRef.current!.createMediaStreamSource(stream);
-          const processor = audioContextInRef.current!.createScriptProcessor(4096, 1, 1);
-          processor.onaudioprocess = (e) => {
-            const inputData = e.inputBuffer.getChannelData(0);
-            const int16 = new Int16Array(inputData.length);
-            for (let i = 0; i < inputData.length; i++) int16[i] = inputData[i] * 32768;
-            sessionPromise.then(session => {
-              session.sendRealtimeInput({ media: { data: encode(new Uint8Array(int16.buffer)), mimeType: 'audio/pcm;rate=16000' } });
-            });
-          };
-          source.connect(processor);
-          processor.connect(audioContextInRef.current!.destination);
+          try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const source = audioContextInRef.current!.createMediaStreamSource(stream);
+            const processor = audioContextInRef.current!.createScriptProcessor(4096, 1, 1);
+            processor.onaudioprocess = (e) => {
+              const inputData = e.inputBuffer.getChannelData(0);
+              const int16 = new Int16Array(inputData.length);
+              for (let i = 0; i < inputData.length; i++) int16[i] = inputData[i] * 32768;
+              sessionPromise.then(session => {
+                session.sendRealtimeInput({ media: { data: encode(new Uint8Array(int16.buffer)), mimeType: 'audio/pcm;rate=16000' } });
+              });
+            };
+            source.connect(processor);
+            processor.connect(audioContextInRef.current!.destination);
+          } catch (err) {
+            console.error("Audio access error", err);
+          }
         },
         onmessage: async (msg: LiveServerMessage) => {
           if (msg.toolCall) {
@@ -213,7 +217,7 @@ const App: React.FC = () => {
           }
         },
         onclose: () => stopListening(),
-        onerror: (e) => console.error("Live Error", e)
+        onerror: (e) => { console.error("Live Error", e); stopListening(); }
       }
     });
     sessionPromiseRef.current = sessionPromise;
@@ -303,7 +307,7 @@ const App: React.FC = () => {
           <div className="absolute bottom-6 left-0 right-0 flex justify-center">
             <button 
               onClick={capturePhoto}
-              className="w-16 h-16 rounded-full bg-white flex items-center justify-center border-4 border-yellow-500 shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-110 active:scale-95 transition-all animate-pulse-ring"
+              className="w-16 h-16 rounded-full bg-white flex items-center justify-center border-4 border-yellow-500 shadow-[0_0_20px_rgba(255,255,255,0.4)] hover:scale-110 active:scale-95 transition-all"
             >
               <div className="w-12 h-12 rounded-full border-2 border-slate-950" />
             </button>
@@ -314,7 +318,7 @@ const App: React.FC = () => {
           <img src={capturedImage} className="w-full h-full object-cover scale-x-[-1]" />
           <div className="absolute top-0 left-0 right-0 h-1 bg-yellow-500 animate-scan-line shadow-[0_0_15px_#eab308]" />
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-             <p className="text-yellow-500 font-bold font-cinzel tracking-widest bg-slate-950/60 px-4 py-2 rounded-full backdrop-blur-md animate-pulse">
+             <p className="text-yellow-500 font-bold font-cinzel tracking-widest bg-slate-950/60 px-4 py-2 rounded-full backdrop-blur-md">
                 {t.faceScanning}
              </p>
           </div>
@@ -459,9 +463,6 @@ const App: React.FC = () => {
                 : 'bg-yellow-500/10 border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/20'
             }`}
           >
-            {isListening && (
-               <div className="absolute inset-0 bg-white/20 animate-voice-ripple" />
-            )}
             <Icons.Mic className={isListening ? "w-5 h-5 animate-bounce" : "w-5 h-5"} />
             <span className="text-xs font-bold uppercase tracking-widest relative">
               {isListening ? t.voiceStop : t.voiceFill}
@@ -611,37 +612,12 @@ const App: React.FC = () => {
                 onClick={() => handleStartReading('face')} 
               />
             </div>
-            
-            {/* Bottom Insight Section */}
-            {!isPremium && (
-              <div className="mt-20 w-full max-w-4xl glass-card p-8 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-8 border-yellow-500/10 hover:border-yellow-500/30 transition-all duration-700 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-yellow-500 to-purple-500 flex items-center justify-center text-slate-950 shadow-[0_0_40px_rgba(234,179,8,0.2)]">
-                  <Icons.IChing />
-                </div>
-                <div className="flex-1 text-center md:text-left">
-                  <h3 className="text-2xl font-cinzel font-bold mb-2 gold-gradient uppercase">{t.upgradeText}</h3>
-                  <p className="text-gray-400 text-sm font-light leading-relaxed">Join 10,000+ seekers who have unlocked their deep cosmic alignment with our PRO features.</p>
-                </div>
-                <button 
-                  onClick={() => setShowPremiumModal(true)}
-                  className="px-8 py-4 bg-yellow-500 text-slate-950 font-bold rounded-2xl hover:bg-yellow-400 transition-all shadow-lg active:scale-95 whitespace-nowrap"
-                >
-                  {t.unlockPremium}
-                </button>
-              </div>
-            )}
           </div>
         ) : (
           <div className="min-h-[60vh] flex flex-col items-center justify-center">
             {loading ? (
               <div className="text-center space-y-6">
-                {currentReading === 'face' && capturedImage ? (
-                  <div className="mb-4 flex justify-center">
-                    <FaceScanOverlay image={capturedImage} size="w-48 h-48" animate={true} />
-                  </div>
-                ) : (
-                  <div className="w-16 h-16 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin mx-auto"></div>
-                )}
+                <div className="w-16 h-16 border-4 border-yellow-500/20 border-t-yellow-500 rounded-full animate-spin mx-auto"></div>
                 <p className="text-xl font-cinzel tracking-widest text-yellow-500 animate-pulse">{t.loading}</p>
               </div>
             ) : (
@@ -655,7 +631,7 @@ const App: React.FC = () => {
 
       {showPremiumModal && <PremiumModal t={t} onClose={() => setShowPremiumModal(false)} onUpgrade={() => { setIsPremium(true); setShowPremiumModal(false); }} />}
       <footer className="fixed bottom-6 left-0 right-0 pointer-events-none text-center opacity-20">
-        <p className="text-[10px] font-cinzel tracking-[0.8em] uppercase">Celestial Sage AI &bull; Est MMXXIV &bull; Wisdom of the Ancients</p>
+        <p className="text-[10px] font-cinzel tracking-[0.8em] uppercase">Celestial Sage AI &bull; Est MMXXIV</p>
       </footer>
     </div>
   );

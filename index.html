@@ -15,6 +15,10 @@
         color: #f8fafc;
         font-family: 'Inter', sans-serif;
         overflow-x: hidden;
+        margin: 0;
+      }
+      #root {
+        min-height: 100vh;
       }
       .font-cinzel { font-family: 'Cinzel', serif; }
       .font-serif-zh { font-family: 'Noto Serif SC', serif; }
@@ -32,7 +36,6 @@
         -webkit-text-fill-color: transparent;
       }
 
-      /* Starfield Background */
       .starfield {
         position: fixed;
         top: 0;
@@ -55,7 +58,6 @@
         50% { opacity: 1; transform: scale(1.2); }
       }
 
-      /* Oracle Pulse */
       .oracle-eye {
         position: relative;
         width: 120px;
@@ -80,14 +82,6 @@
         50% { transform: scale(1.1); opacity: 1; }
       }
 
-      .animate-float {
-        animation: float 6s ease-in-out infinite;
-      }
-      @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-15px); }
-      }
-      
       @keyframes scan-line {
         0% { top: 0%; opacity: 0; }
         15% { opacity: 1; }
@@ -102,19 +96,19 @@
       ::-webkit-scrollbar-track { background: #020617; }
       ::-webkit-scrollbar-thumb { background: #eab308; border-radius: 10px; }
     </style>
-  <script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@19.0.0",
-    "react/": "https://esm.sh/react@19.0.0/",
     "react-dom": "https://esm.sh/react-dom@19.0.0",
-    "react-dom/": "https://esm.sh/react-dom@19.0.0/",
     "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "@google/genai": "https://esm.sh/@google/genai@1.34.0"
+    "@google/genai": "https://esm.sh/@google/genai@1.34.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
   }
 }
 </script>
-</head>
+  </head>
   <body>
     <div id="root"></div>
     <div class="starfield" id="starfield"></div>
