@@ -1,0 +1,8 @@
+{
+  "name": "Celestial Sage - AI Sinology Fortune",
+  "description": "A high-end spiritual AI application specializing in traditional Chinese fortune telling, including Bazi, I Ching, and face reading, with a modern Starla-inspired UI.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
