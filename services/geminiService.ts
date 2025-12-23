@@ -13,36 +13,54 @@ export const generateFortune = async (
   const isIChing = type === 'iching';
   const isFace = type === 'face';
   const isBazi = type === 'bazi';
+  const isDaily = type === 'daily';
+
+  const today = new Date().toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long'
+  });
   
   const textPrompt = `
-    You are a master of Chinese Traditional Metaphysics (Sinology/Guoxue). 
-    Context: ${type} reading for ${userData.name}, born on ${userData.birthDate} at ${userData.birthTime || 'unknown time'}.
-    Gender: ${userData.gender}.
+    You are a legendary grand master of Chinese Traditional Metaphysics (Guoxue). 
+    Your task is to generate a comprehensive "Destiny Report" for ${userData.name}.
+    Context: ${type} analysis.
+    User Profile: ${userData.gender}, born on ${userData.birthDate} at ${userData.birthTime || 'unknown time'}.
+    Current Date: ${today}.
     Language: ${lang === 'en' ? 'English' : 'Chinese'}.
     
+    Specific Instructions for ${type}:
     ${isIChing ? 
-      "For I Ching: Generate a specific hexagram (6 lines from bottom to top). Include the hexagram name, the line composition (0 for Yin, 1 for Yang), any changing lines, and a deep philosophical interpretation." : 
+      `For I Ching (Divination): The user's specific question is: "${userData.ichingQuestion || 'General Fortune'}". 
+      Cast a hexagram reflecting this query. You MUST populate the 'hexagram' object. 
+      Include 6 'lines' (from bottom to top, index 0 to 5, 0 for Yin, 1 for Yang), a meaningful 'name', 'changingLines' (if any, indices 1-6), and a deep philosophical 'interpretation'. 
+      Provide 4 detailed categories in 'details': 'Current Situation', 'Potential Obstacles', 'Recommended Action', 'Final Outcome'.` : 
       isFace ?
-      "Analyze the provided face image based on Chinese Physiognomy (Mian Xiang). You MUST provide a breakdown of these specific facial features in the 'details' array: 'Forehead (Sky Pillar)', 'Eyes (Spirit Light)', 'Nose (Wealth Palace)', 'Mouth (River of Life)', and 'Chin (Earth Foundation)'. For each, provide a detailed interpretation. Provide a general summary and a score." :
+      "For AI Face Reading (Physiognomy): Analyze the provided image using Mian Xiang principles. You MUST provide 5 detailed categories in 'details': 'Forehead (Career/Wisdom)', 'Eyes (Spirit/Character)', 'Nose (Wealth/Prosperity)', 'Mouth (Communication/Heritage)', and 'Chin (Late-life Fortune)'. Provide a 'score' and a summary of their 'Aura'." :
       isBazi ?
-      "For Bazi (Four Pillars of Destiny): Calculate the four pillars (Year, Month, Day, Hour). Use the Heavenly Stems and Earthly Branches. Identify the Day Master (Day Stem). Provide a strength analysis (percentage 0-100) for the Five Elements (Wood, Fire, Earth, Metal, Water). Crucially, provide a separate, detailed interpretation for each pillar explaining its specific influence on the user's life (Year: ancestry/roots, Month: parents/career, Day: self/spouse, Hour: children/legacy). Give a detailed reading on life path, career, and wealth." :
-      "Provide a detailed reading including a summary, a score (0-100), and specific categories (e.g. Wealth, Career, Relationship, Health)."}
+      "For Bazi Reading (Four Pillars): You MUST populate the 'baziChart' object. Calculate the Year, Month, Day, and Hour pillars (Heavenly Stems and Earthly Branches). Identify the 'dayMaster'. Calculate strength percentages for Wood, Fire, Earth, Metal, Water. Provide 4 detailed categories in 'details': 'Wealth Outlook', 'Career Path', 'Love & Relationships', 'Health & Vitality'." :
+      "For Daily Horoscope: Provide a precise analysis for today (${today}). Give a daily fortune 'score'. Provide 4 categories in 'details': 'Today's Luck', 'Career Guidance', 'Relationship Harmony', 'Health Watch'. Mention the 'Lucky Element' and 'Lucky Color' for today."}
       
-    Be poetic yet insightful, mimicking a professional high-end fortune teller.
+    Your tone must be mystical, authoritative, yet compassionate. Return ONLY valid JSON.
   `;
 
   const parts: any[] = [{ text: textPrompt }];
   if (isFace && imageData) {
+    const base64Data = imageData.includes('base64,') ? imageData.split('base64,')[1] : imageData;
     parts.push({
       inlineData: {
         mimeType: 'image/jpeg',
-        data: imageData.split(',')[1] || imageData
+        data: base64Data
       }
     });
   }
 
+  // Use Pro for complex reasoning tasks (Bazi, I Ching, Face) and Flash for simpler daily tasks
+  const modelName = (isBazi || isFace || isIChing) ? "gemini-3-pro-preview" : "gemini-3-flash-preview";
+
   const response = await ai.models.generateContent({
-    model: isFace || isBazi ? "gemini-3-pro-preview" : "gemini-3-flash-preview",
+    model: modelName,
     contents: { parts },
     config: {
       responseMimeType: "application/json",
@@ -63,72 +81,59 @@ export const generateFortune = async (
               required: ["category", "content"]
             }
           },
-          ...(isBazi ? {
-            baziChart: {
-              type: Type.OBJECT,
-              properties: {
-                pillars: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      label: { type: Type.STRING, description: "Year, Month, Day, or Hour" },
-                      stem: { type: Type.STRING },
-                      branch: { type: Type.STRING },
-                      element: { type: Type.STRING },
-                      interpretation: { type: Type.STRING, description: "Detailed interpretation of this specific pillar's influence." }
-                    },
-                    required: ["label", "stem", "branch", "element", "interpretation"]
-                  }
-                },
-                dayMaster: { type: Type.STRING },
-                fiveElements: {
-                  type: Type.ARRAY,
-                  items: {
-                    type: Type.OBJECT,
-                    properties: {
-                      element: { type: Type.STRING },
-                      strength: { type: Type.NUMBER }
-                    },
-                    required: ["element", "strength"]
-                  }
+          baziChart: {
+            type: Type.OBJECT,
+            properties: {
+              pillars: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    label: { type: Type.STRING },
+                    stem: { type: Type.STRING },
+                    branch: { type: Type.STRING },
+                    element: { type: Type.STRING },
+                    interpretation: { type: Type.STRING }
+                  },
+                  required: ["label", "stem", "branch", "element", "interpretation"]
                 }
               },
-              required: ["pillars", "dayMaster", "fiveElements"]
+              dayMaster: { type: Type.STRING },
+              fiveElements: {
+                type: Type.ARRAY,
+                items: {
+                  type: Type.OBJECT,
+                  properties: {
+                    element: { type: Type.STRING },
+                    strength: { type: Type.NUMBER }
+                  },
+                  required: ["element", "strength"]
+                }
+              }
             }
-          } : {}),
-          ...(isIChing ? {
-            hexagram: {
-              type: Type.OBJECT,
-              properties: {
-                lines: { 
-                  type: Type.ARRAY, 
-                  items: { type: Type.INTEGER },
-                  description: "6 lines from bottom to top. 1 for Yang (solid), 0 for Yin (broken)."
-                },
-                name: { type: Type.STRING },
-                changingLines: { 
-                  type: Type.ARRAY, 
-                  items: { type: Type.INTEGER },
-                  description: "Indices of changing lines (1 to 6)."
-                },
-                interpretation: { type: Type.STRING }
-              },
-              required: ["lines", "name", "interpretation"]
+          },
+          hexagram: {
+            type: Type.OBJECT,
+            properties: {
+              lines: { type: Type.ARRAY, items: { type: Type.INTEGER } },
+              name: { type: Type.STRING },
+              changingLines: { type: Type.ARRAY, items: { type: Type.INTEGER } },
+              interpretation: { type: Type.STRING }
             }
-          } : {})
+          }
         },
         required: ["title", "summary", "score", "details"]
-      }
+      },
+      thinkingConfig: modelName === 'gemini-3-flash-preview' ? { thinkingBudget: 0 } : undefined
     }
   });
 
   try {
     const text = response.text;
-    if (!text) throw new Error("Empty response");
+    if (!text) throw new Error("Divine connection lost.");
     return JSON.parse(text);
   } catch (e) {
-    console.error("Parse error:", e);
-    throw new Error("Failed to parse AI response");
+    console.error("Report generation failed:", e);
+    throw new Error("Heavenly signal obscured. Please try again.");
   }
 };

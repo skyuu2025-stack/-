@@ -24,6 +24,8 @@ export const TRANSLATIONS: Record<Language, Translation & {
     baziTitle: "Bazi Reading",
     ichingTitle: "I Ching Divination",
     ichingChanges: "Significance of the Changes",
+    ichingQuestionLabel: "Your Question",
+    ichingPlaceholder: "What do you seek from the heavens?",
     faceTitle: "Face Reading",
     dailyTitle: "Daily Horoscope",
     getStarted: "Begin Journey",
@@ -58,6 +60,8 @@ export const TRANSLATIONS: Record<Language, Translation & {
     baziTitle: "八字排盘",
     ichingTitle: "周易卜卦",
     ichingChanges: "变爻解析与化象",
+    ichingQuestionLabel: "心中所求",
+    ichingPlaceholder: "请默念所求之事（如事业、感情等）",
     faceTitle: "AI面相",
     dailyTitle: "每日运势",
     getStarted: "开始探索",
@@ -66,7 +70,6 @@ export const TRANSLATIONS: Record<Language, Translation & {
     unlockPremium: "升级尊享版",
     loading: "正在窥探天机...",
     inputName: "姓名",
-    // Fix duplicate property name for inputBirthDate
     inputBirthDate: "出生日期",
     inputBirthTime: "出生时辰",
     inputGender: "性别",
@@ -129,6 +132,33 @@ export const Icons = {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
       <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
       <circle cx="12" cy="13" r="4" />
+    </svg>
+  ),
+  Forehead: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6">
+      <path d="M12 2v2M5 5l1.5 1.5M19 5l-1.5 1.5M12 7c-4 0-7 2-7 5s3 5 7 5 7-2 7-5-3-5-7-5z" strokeLinecap="round" />
+    </svg>
+  ),
+  Eyes: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6">
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  ),
+  Nose: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6">
+      <path d="M12 4v12m-4 0a4 4 0 1 0 8 0" strokeLinecap="round" />
+    </svg>
+  ),
+  Mouth: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6">
+      <path d="M4 10c2 3 6 5 8 5s6-2 8-5c-3-2-7-3-8-3s-5 1-8 3z" strokeLinecap="round" />
+      <path d="M4 14c3 2 6 3 8 3s5-1 8-3" strokeLinecap="round" />
+    </svg>
+  ),
+  Chin: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6">
+      <path d="M12 21c-4 0-8-3-8-7v-4h16v4c0 4-4 7-8 7z" strokeLinecap="round" />
     </svg>
   )
 };

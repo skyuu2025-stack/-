@@ -9,6 +9,7 @@ export interface UserProfile {
   birthTime: string;
   gender: 'male' | 'female' | 'other';
   isPremium: boolean;
+  ichingQuestion?: string; // New: context for I Ching
 }
 
 export interface ReadingResult {
@@ -49,6 +50,8 @@ export interface Translation {
   baziTitle: string;
   ichingTitle: string;
   ichingChanges: string;
+  ichingQuestionLabel: string;
+  ichingPlaceholder: string;
   faceTitle: string;
   dailyTitle: string;
   getStarted: string;
