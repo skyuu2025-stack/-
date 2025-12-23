@@ -1,6 +1,6 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Language, ReadingType, ReadingResult } from "../types";
+import { Language, ReadingType, ReadingResult } from "../types.ts";
 
 export const generateFortune = async (
   type: ReadingType,

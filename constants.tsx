@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Translation, Language } from './types';
+import { Translation, Language } from './types.ts';
 
 export const TRANSLATIONS: Record<Language, Translation & { 
   profile: string; 

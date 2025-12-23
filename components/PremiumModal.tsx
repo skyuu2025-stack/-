@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Translation } from '../types';
+import { Translation } from '../types.ts';
 
 interface PremiumModalProps {
   t: Translation;

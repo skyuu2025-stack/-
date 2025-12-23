@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { GoogleGenAI, LiveServerMessage, Modality, Type, FunctionDeclaration } from '@google/genai';
-import { Language, UserProfile, ReadingType, ReadingResult } from './types';
-import { TRANSLATIONS, Icons } from './constants';
-import { Header } from './components/Header';
-import { FortuneCard } from './components/FortuneCard';
-import { PremiumModal } from './components/PremiumModal';
-import { generateFortune } from './services/geminiService';
+import { Language, UserProfile, ReadingType, ReadingResult } from './types.ts';
+import { TRANSLATIONS, Icons } from './constants.tsx';
+import { Header } from './components/Header.tsx';
+import { FortuneCard } from './components/FortuneCard.tsx';
+import { PremiumModal } from './components/PremiumModal.tsx';
+import { generateFortune } from './services/geminiService.ts';
 
 // Audio Utils
 function encode(bytes: Uint8Array) {
@@ -104,8 +104,13 @@ const App: React.FC = () => {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
-    const saved = localStorage.getItem('celestial_sage_profile');
-    return saved ? JSON.parse(saved) : {
+    try {
+      const saved = localStorage.getItem('celestial_sage_profile');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error("Failed to load profile", e);
+    }
+    return {
       name: '',
       birthDate: '',
       birthTime: '',

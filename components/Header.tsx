@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { Language, Translation } from '../types';
-import { Icons } from '../constants';
+import { Language, Translation } from '../types.ts';
+import { Icons } from '../constants.tsx';
 
 interface HeaderProps {
   lang: Language;
