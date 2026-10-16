@@ -8,12 +8,14 @@ interface HeaderProps {
   t: any; // Using any to accommodate extended translations
   setLang: (l: Language) => void;
   isPremium: boolean;
+  watchActive: boolean;
+  onShowWatch: () => void;
   onShowPremium: () => void;
   onShowProfile: () => void;
   onGoHome: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ lang, t, setLang, isPremium, onShowPremium, onShowProfile, onGoHome }) => {
+export const Header: React.FC<HeaderProps> = ({ lang, t, setLang, isPremium, watchActive, onShowWatch, onShowPremium, onShowProfile, onGoHome }) => {
   return (
     <header className="fixed top-0 left-0 right-0 z-40 bg-slate-950/20 backdrop-blur-xl border-b border-white/5">
       <div className="max-w-7xl mx-auto px-6 h-24 flex items-center justify-between">
@@ -31,6 +33,12 @@ export const Header: React.FC<HeaderProps> = ({ lang, t, setLang, isPremium, onS
         </div>
 
         <div className="flex items-center gap-4">
+          <button
+            onClick={onShowWatch}
+            className={`px-4 py-1.5 rounded-full border text-[10px] font-bold tracking-widest uppercase transition-all ${watchActive ? "bg-yellow-500 text-slate-950 border-yellow-500" : "border-white/10 text-gray-400 hover:text-white hover:bg-white/5"}`}
+          >
+            {lang === "zh" ? "监测" : "Watch"}
+          </button>
           <button 
             onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
             className="px-4 py-1.5 rounded-full border border-white/10 hover:bg-white/5 transition-all text-[10px] font-bold tracking-widest uppercase text-gray-400 hover:text-white"

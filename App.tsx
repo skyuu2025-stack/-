@@ -7,6 +7,7 @@ import { Header } from './components/Header.tsx';
 import { FortuneCard } from './components/FortuneCard.tsx';
 import { PremiumModal } from './components/PremiumModal.tsx';
 import { generateFortune } from './services/geminiService.ts';
+import { WalletMonitor } from './components/WalletMonitor.tsx';
 
 // --- Utils ---
 function encode(bytes: Uint8Array) {
@@ -80,6 +81,7 @@ const App: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [frequencies, setFrequencies] = useState<number[]>(new Array(32).fill(10));
+  const [showWatch, setShowWatch] = useState(false);
 
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('sage_profile');
@@ -410,9 +412,17 @@ const App: React.FC = () => {
         t={t} 
         setLang={setLang} 
         isPremium={isPremium} 
+        watchActive={showWatch}
+        onShowWatch={() => {
+          setShowWatch(true);
+          setIsEditingProfile(false);
+          setCurrentReading(null);
+          setReadingResult(null);
+        }}
         onShowPremium={() => setShowPremiumModal(true)} 
-        onShowProfile={() => setIsEditingProfile(true)} 
+        onShowProfile={() => { setIsEditingProfile(true); setShowWatch(false); }} 
         onGoHome={() => { 
+          setShowWatch(false);
           setCurrentReading(null); 
           setReadingResult(null); 
           setIsEditingProfile(false); 
@@ -421,7 +431,9 @@ const App: React.FC = () => {
         }} 
       />
       <main className="pt-32 px-6 max-w-7xl mx-auto">
-        {isEditingProfile ? (
+        {showWatch ? (
+          <WalletMonitor lang={lang} />
+        ) : isEditingProfile ? (
           <div className="min-h-[60vh] flex items-center justify-center">
             <div className="max-w-lg w-full glass-card p-10 rounded-[2.5rem] animate-in zoom-in-95 duration-500">
               <h2 className="text-2xl font-bold gold-gradient font-cinzel mb-10">{t.profile}</h2>
