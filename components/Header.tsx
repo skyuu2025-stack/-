@@ -27,8 +27,8 @@ export const Header: React.FC<HeaderProps> = ({ lang, t, setLang, isPremium, wat
             天
           </div>
           <div className="flex flex-col">
-            <h1 className="font-cinzel text-xl font-bold tracking-[0.3em] uppercase hidden sm:block">{t.welcome}</h1>
-            <span className="text-[8px] font-cinzel tracking-[0.4em] text-yellow-500/50 uppercase hidden sm:block">Celestial Oracle</span>
+            <h1 className="font-cinzel text-xl font-bold tracking-[0.3em] uppercase hidden sm:block">{watchActive ? (lang === "zh" ? "链上监测" : "Chainwatch") : t.welcome}</h1>
+            <span className="text-[8px] font-cinzel tracking-[0.4em] text-yellow-500/50 uppercase hidden sm:block">{watchActive ? (lang === "zh" ? "钱包监测" : "Wallet monitor") : "Celestial Oracle"}</span>
           </div>
         </div>
 
@@ -46,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({ lang, t, setLang, isPremium, wat
             {t.switchLang}
           </button>
 
-          {!isPremium && (
+          {!watchActive && !isPremium && (
             <button 
               onClick={onShowPremium}
               className="px-4 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30 text-yellow-500 text-[10px] font-bold tracking-widest uppercase hover:bg-yellow-500/20 transition-all hidden sm:block"
@@ -55,13 +55,15 @@ export const Header: React.FC<HeaderProps> = ({ lang, t, setLang, isPremium, wat
             </button>
           )}
 
-          <button 
-            onClick={onShowProfile}
-            className="w-10 h-10 flex items-center justify-center rounded-full border border-white/10 hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all text-gray-400 hover:text-yellow-500"
-            title={t.profile}
-          >
-            <Icons.User />
-          </button>
+          {!watchActive && (
+            <button 
+              onClick={onShowProfile}
+              className="w-10 h-10 flex items-center justify-center rounded-full border border-white/10 hover:border-yellow-500/50 hover:bg-yellow-500/5 transition-all text-gray-400 hover:text-yellow-500"
+              title={t.profile}
+            >
+              <Icons.User />
+            </button>
+          )}
           
           <button 
             onClick={onGoHome}

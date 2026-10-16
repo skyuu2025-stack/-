@@ -139,6 +139,9 @@ function errorText(code: string, copy: (typeof TEXT)["zh"]): string {
 
 export const WalletMonitor: React.FC<{ lang: Language }> = ({ lang }) => {
   const copy = TEXT[lang];
+  useEffect(() => {
+    document.title = lang === "zh" ? "链上钱包监测" : "On-chain wallet monitor";
+  }, [lang]);
   const [wallets, setWallets] = useState<WatchedWallet[]>(loadStored);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [chainId, setChainId] = useState<ChainId>("eth");

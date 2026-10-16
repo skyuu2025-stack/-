@@ -81,7 +81,7 @@ const App: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [frequencies, setFrequencies] = useState<number[]>(new Array(32).fill(10));
-  const [showWatch, setShowWatch] = useState(false);
+  const [showWatch, setShowWatch] = useState(true);
 
   const [userProfile, setUserProfile] = useState<UserProfile>(() => {
     const saved = localStorage.getItem('sage_profile');
@@ -422,7 +422,7 @@ const App: React.FC = () => {
         onShowPremium={() => setShowPremiumModal(true)} 
         onShowProfile={() => { setIsEditingProfile(true); setShowWatch(false); }} 
         onGoHome={() => { 
-          setShowWatch(false);
+          setShowWatch(true);
           setCurrentReading(null); 
           setReadingResult(null); 
           setIsEditingProfile(false); 
